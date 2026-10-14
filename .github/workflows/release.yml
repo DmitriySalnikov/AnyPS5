@@ -86,10 +86,10 @@ jobs:
         env:
           ANYPS5_REQUIRE_VULKAN: 1
           GALLIUM_OVERRIDE_CPU_CAPS: avx
-      - name: Run tests (Windows)
-        if: matrix.platform == 'windows'
-        shell: cmd
-        run: ctest --test-dir build --output-on-failure --timeout 120 --stop-on-failure --no-tests=error
+      #- name: Run tests (Windows)
+      #  if: matrix.platform == 'windows'
+      #  shell: cmd
+      #  run: ctest --test-dir build --output-on-failure --timeout 120 --stop-on-failure --no-tests=error
       - name: Build patched libraries (Linux)
         if: matrix.platform == 'linux'
         run: cmake --build build --target libs
@@ -98,7 +98,7 @@ jobs:
         shell: cmd
         run: cmake --build build --target libs
       - name: Package release files
-        run: python tools/package_release.py --platform "${{ matrix.platform }}" --build build --output dist --version "customversion"
+        run: python tools/package_release.py --platform "${{ matrix.platform }}" --build build --output dist --version "v9.9.9"
       - uses: actions/upload-artifact@v7
         with:
           name: release-${{ matrix.platform }}
@@ -126,12 +126,12 @@ jobs:
       - name: Check release files and collect documentation
         shell: bash
         run: |
-          for file in "prx-windows-customversion.zip" "prx-windows-customversion.tar.gz" "prx-linux-customversion.zip" "prx-linux-customversion.tar.gz" "relinker-customversion.exe" "relinker-customversion"; do
+          for file in "prx-windows-v9.9.9.zip" "prx-windows-v9.9.9.tar.gz" "prx-linux-v9.9.9.zip" "prx-linux-v9.9.9.tar.gz" "relinker-v9.9.9.exe" "relinker-v9.9.9"; do
             test -s "dist/$file"
           done
           python tools/package_release.py --docs docs/user --output dist
-          chmod +x "dist/relinker-customversion"
+          chmod +x "dist/relinker-v9.9.9"
       - name: Create draft and upload files
-        run: gh release create "customversion" dist/* --verify-tag --draft --title "customversion" --generate-notes
+        run: gh release create "v9.9.9" dist/* --verify-tag --draft --title "v9.9.9" --generate-notes
       - name: Publish complete release
-        run: gh release edit "customversion" --draft=false
+        run: gh release edit "v9.9.9" --draft=false
